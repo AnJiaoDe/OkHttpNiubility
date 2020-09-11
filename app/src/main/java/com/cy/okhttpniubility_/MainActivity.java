@@ -13,6 +13,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -69,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
                     }
 
+
                     System.out.println(responseBody.string());
+                    responseBody.close();
                 }
             }
         });
@@ -119,6 +122,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void run2() throws Exception {
+        HttpUrl.Builder urlBuilder =HttpUrl.parse("https://api.weibo.com/2/users/show.json")
+                .newBuilder();
+        urlBuilder.addQueryParameter("access_token", oauth2AccessToken.getToken());
+
+
         RequestBody formBody = new FormBody.Builder()
                 .add("search", "Jurassic Park")
                 .build();
@@ -126,10 +134,8 @@ public class MainActivity extends AppCompatActivity {
                 .url("https://en.wikipedia.org/w/index.php")
                 .post(formBody)
                 .build();
-
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
             System.out.println(response.body().string());
         }
     }
